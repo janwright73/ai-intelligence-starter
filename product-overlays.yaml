@@ -1,0 +1,82 @@
+schemaVersion: "0.1"
+artifactOwner: FELTRFE-75
+status: illustrative
+
+products:
+  - id: syntara
+    patterns:
+      - patternId: felt.pattern.asynchronous-content
+        implementation:
+          component: SynListPanelView
+          source: frontend/packages/syntara-ui
+        stateMapping:
+          loading: isPending
+          refreshing: isFetching
+          empty: isEmpty
+          filteredEmpty: hasActiveFilters
+          ready: children
+        localRequirements:
+          - Use SynListPanelToolbar and SynListPanelTable for established list surfaces.
+          - Preserve the Syntara page shell during list-state changes.
+
+      - patternId: felt.pattern.destructive-action
+        implementation:
+          component: SynConfirmationDialog
+        variantMapping:
+          irreversible:
+            acknowledgement: destructiveAcknowledgement
+            actionVariant: danger
+          reversible:
+            acknowledgement: false
+            actionVariant: warning
+        exceptions:
+          - id: syntara.destructive-action.cancel-running-execution
+            appliesWhen:
+              action: cancel-run
+              executionState: [pending, running]
+            behavior:
+              confirmation: false
+              selfDisableWhilePending: true
+              successFeedback: Execution cancellation requested
+            rationale: The action is a time-sensitive request to stop an in-progress operation and has an established product interaction.
+
+      - patternId: felt.pattern.permission-aware-content
+        localRequirements:
+          - Build tabs only after permission loading completes.
+          - Remove or neutralize breadcrumb links to inaccessible parent routes.
+
+      - patternId: felt.pattern.navigable-row
+        implementation:
+          component: HistoryListItemLink
+        localRequirements:
+          - Preserve TanStack Router link behavior.
+          - Use the established overlay treatment when a row includes nested controls.
+
+  - id: hummingbird
+    patterns:
+      - patternId: felt.pattern.asynchronous-content
+        implementation:
+          loadingComponent: ContentStatus
+          errorComponent: ContentError
+          contentRoot: hb-content
+        stateMapping:
+          loading: isLoading
+          error: error
+          empty: isEmpty
+          ready: notLoadingAndNotEmpty
+        localRequirements:
+          - Keep async branches visible in the section return.
+          - Do not create sections named for loading or error chrome.
+          - Reuse shared hb-content spacing rather than per-tab layout dialects.
+
+      - patternId: felt.pattern.composed-surface-heading
+        localRequirements:
+          - Section outlines remain in the page entry section files.
+          - Drawer shell files do not inject a duplicate document heading.
+          - Scroll landmarks live on the relevant content section rather than the shared shell root.
+
+    workflowGuidance:
+      - Search existing PatternFly components, primitives, and sections before adding a new abstraction.
+      - Use concern-aligned files and one readable scaffold.
+      - Render and smoke-test affected pages and drawers before completion.
+

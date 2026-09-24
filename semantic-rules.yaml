@@ -1,0 +1,159 @@
+schemaVersion: "0.1"
+artifactOwner: FELTRFE-19
+status: illustrative
+
+rules:
+  - id: FELT-AS-001
+    patternId: felt.pattern.asynchronous-content
+    statement: Loading, error, empty, and ready must be distinguishable states.
+    defaultSeverity: error
+    enforcement: partially-deterministic
+    suggestedValidators: [component-test, rendered-dom]
+    diagnostic:
+      message: The surface uses one branch for states that require different user feedback.
+      remediation: Represent loading, error, empty, and ready separately.
+
+  - id: FELT-AS-002
+    patternId: felt.pattern.asynchronous-content
+    statement: A stable page or section identity should remain visible while its body loads.
+    defaultSeverity: warning
+    enforcement: evaluation
+    diagnostic:
+      message: Loading removes the stable identity of this surface.
+      remediation: Keep the accurate title or shell visible and gate only the asynchronous body.
+
+  - id: FELT-AS-003
+    patternId: felt.pattern.asynchronous-content
+    statement: A background refresh must not be presented as an initial empty load.
+    defaultSeverity: error
+    enforcement: deterministic-with-product-adapter
+    diagnostic:
+      message: Existing content disappears during background refresh.
+      remediation: Preserve current content and communicate the refresh state.
+
+  - id: FELT-AS-004
+    patternId: felt.pattern.asynchronous-content
+    statement: Meaningful asynchronous status changes must be exposed accessibly.
+    defaultSeverity: error
+    enforcement: rendered-accessibility
+    diagnostic:
+      message: The loading or update status has no accessible name or announcement.
+      remediation: Add an appropriate accessible label or status region.
+
+  - id: FELT-DA-001
+    patternId: felt.pattern.destructive-action
+    statement: Irreversible actions require deliberate confirmation.
+    defaultSeverity: error
+    enforcement: deterministic-with-product-adapter
+    diagnostic:
+      message: An irreversible action is available without the required confirmation tier.
+      remediation: Apply the irreversible-action confirmation variant.
+
+  - id: FELT-DA-002
+    patternId: felt.pattern.destructive-action
+    statement: Known affected dependencies must be disclosed before confirmation.
+    defaultSeverity: error
+    enforcement: component-test-or-human-review
+    diagnostic:
+      message: The confirmation does not disclose affected dependent resources.
+      remediation: Explain or list affected dependencies before acknowledgement.
+
+  - id: FELT-DA-003
+    patternId: felt.pattern.destructive-action
+    statement: Confirmation burden must increase for materially broader scope.
+    defaultSeverity: warning
+    enforcement: evaluation
+    diagnostic:
+      message: The confirmation tier may not reflect the scope of this action.
+      remediation: Review the resource, user, or global scope requirements.
+
+  - id: FELT-DA-004
+    patternId: felt.pattern.destructive-action
+    statement: A slow one-shot action must prevent duplicate submission and communicate progress.
+    defaultSeverity: error
+    enforcement: component-test
+    diagnostic:
+      message: The action remains invokable while its request is pending.
+      remediation: Disable or self-lock the action and expose pending status.
+
+  - id: FELT-PC-001
+    patternId: felt.pattern.permission-aware-content
+    statement: Protected controls must not appear before access is confirmed.
+    defaultSeverity: error
+    enforcement: component-test
+    diagnostic:
+      message: Protected UI is visible while permission resolution is incomplete.
+      remediation: Hide it until access is confirmed.
+
+  - id: FELT-PC-002
+    patternId: felt.pattern.permission-aware-content
+    statement: Navigation must not link to a destination the user cannot access.
+    defaultSeverity: error
+    enforcement: integration-test
+    diagnostic:
+      message: This navigation element links to an inaccessible destination.
+      remediation: Remove the link, render non-link text, or provide an accessible route.
+
+  - id: FELT-PC-003
+    patternId: felt.pattern.permission-aware-content
+    statement: Permission loading and data loading must not be conflated.
+    defaultSeverity: warning
+    enforcement: component-test
+    diagnostic:
+      message: The surface cannot distinguish unresolved permission from unresolved data.
+      remediation: Model permission resolution separately from the data request.
+
+  - id: FELT-SH-001
+    patternId: felt.pattern.composed-surface-heading
+    statement: A composed surface must have an accessible name.
+    defaultSeverity: error
+    enforcement: rendered-accessibility
+    diagnostic:
+      message: The drawer, panel, or dialog does not have an accessible name.
+      remediation: Associate the surface with its visible heading or provide an accessible label.
+
+  - id: FELT-SH-002
+    patternId: felt.pattern.composed-surface-heading
+    statement: Shell chrome and document content must not repeat the same visible title.
+    defaultSeverity: warning
+    enforcement: rendered-dom
+    diagnostic:
+      message: The same title appears in both shell chrome and document content.
+      remediation: Select one visible title owner and preserve accessible naming.
+
+  - id: FELT-SH-003
+    patternId: felt.pattern.composed-surface-heading
+    statement: Heading hierarchy must remain valid in the composed context.
+    defaultSeverity: error
+    enforcement: rendered-accessibility
+    diagnostic:
+      message: The composed surface has an invalid or ambiguous heading hierarchy.
+      remediation: Adjust heading levels for the page, drawer, panel, or tab context.
+
+  - id: FELT-NR-001
+    patternId: felt.pattern.navigable-row
+    statement: A row whose primary action navigates must use link semantics.
+    defaultSeverity: error
+    enforcement: rendered-dom
+    diagnostic:
+      message: The navigable row is implemented as a button or click handler rather than a link.
+      remediation: Use an anchor or router link that preserves browser navigation behavior.
+
+  - id: FELT-NR-002
+    patternId: felt.pattern.navigable-row
+    statement: Modified click and open-in-new-tab behavior must be preserved.
+    defaultSeverity: error
+    enforcement: browser-test
+    diagnostic:
+      message: The row cannot be opened in a new tab using standard browser interaction.
+      remediation: Use real link semantics and avoid intercepting modified clicks.
+
+  - id: FELT-NR-003
+    patternId: felt.pattern.navigable-row
+    statement: Nested controls must remain independently operable.
+    defaultSeverity: error
+    enforcement: browser-test
+    diagnostic:
+      message: Activating a nested control also triggers row navigation.
+      remediation: Separate the nested control interaction from the row destination.
+

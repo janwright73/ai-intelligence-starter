@@ -1,0 +1,56 @@
+schemaVersion: "0.1"
+artifactOwner: FELTRFE-43
+status: illustrative
+
+guidanceExamples:
+  - request:
+      intent: Build a filterable resource list that loads from an API.
+      product: hummingbird
+    selection:
+      patternId: felt.pattern.asynchronous-content
+      variantInputs:
+        stableIdentity: true
+        supportsFiltering: true
+        supportsBackgroundRefresh: true
+    conciseGuidance:
+      - Keep the section title and stable shell visible while its data loads.
+      - Represent loading, error, empty, filtered-empty, and ready distinctly.
+      - During background refresh, preserve current content and communicate that controls are temporarily unavailable if necessary.
+      - Use the Hummingbird overlay for its approved status components and content root.
+    applicableRules: [FELT-AS-001, FELT-AS-002, FELT-AS-003, FELT-AS-004]
+    workflow:
+      - Retrieve current PatternFly component references.
+      - Read the Hummingbird product overlay.
+      - Inspect existing repository primitives before creating another status component.
+      - Implement and render all applicable states.
+      - Run Felt semantic validation and Hummingbird tests.
+
+  - request:
+      intent: Add a control that cancels a currently running execution.
+      product: syntara
+    selection:
+      patternId: felt.pattern.destructive-action
+      variantInputs:
+        reversibility: reversible
+        scope: resource
+        hasDependencies: false
+        executionMode: asynchronous
+    conciseGuidance:
+      - Confirmation is not automatically required for a reversible, time-sensitive cancellation.
+      - Prevent duplicate submission while cancellation is pending.
+      - Communicate progress, success, and failure.
+      - Apply the documented Syntara immediate-cancel exception rather than the irreversible-delete variant.
+    applicableRules: [FELT-DA-004]
+    productException: syntara.destructive-action.cancel-running-execution
+
+  - request:
+      intent: Add a tab visible only to users with workflow-read permission.
+      product: syntara
+    selection:
+      patternId: felt.pattern.permission-aware-content
+    conciseGuidance:
+      - Keep the protected tab absent until the permission check confirms access.
+      - Do not briefly show and then remove it.
+      - Ensure breadcrumbs and related navigation do not expose inaccessible destinations.
+    applicableRules: [FELT-PC-001, FELT-PC-002]
+

@@ -1,0 +1,132 @@
+schemaVersion: "0.1"
+catalogStatus: illustrative
+note: >-
+  These definitions demonstrate the proposed FELTRFE-75 artifact shape. They
+  require design-system and product-team review before becoming policy.
+
+patterns:
+  - id: felt.pattern.asynchronous-content
+    version: 0.1.0
+    title: Asynchronous content
+    intent: Preserve comprehension and accessible feedback while content changes state.
+    appropriateUse:
+      - Pages, panels, tabs, lists, tables, and sections backed by asynchronous data.
+    inputs:
+      stableIdentity:
+        type: boolean
+      supportsFiltering:
+        type: boolean
+      supportsBackgroundRefresh:
+        type: boolean
+    states:
+      - permission-loading
+      - loading
+      - refreshing
+      - error
+      - empty
+      - filtered-empty
+      - ready
+    behavioralGuidance:
+      - Distinguish loading from empty and error.
+      - Preserve stable page or section identity while its body loads when doing so remains accurate.
+      - Do not replace existing ready content with a blank loading surface during background refresh.
+      - Empty-state language should explain the actual domain condition.
+    accessibility:
+      - Announce meaningful status changes without repeatedly interrupting the user.
+      - Ensure loading indicators have an accessible name.
+      - Prevent disabled refreshing controls from becoming silently unusable.
+    rules:
+      - FELT-AS-001
+      - FELT-AS-002
+      - FELT-AS-003
+      - FELT-AS-004
+    provenance:
+      - HOF-03
+      - SYN-04
+
+  - id: felt.pattern.destructive-action
+    version: 0.1.0
+    title: Destructive and consequential actions
+    intent: Help users understand and deliberately invoke actions with material consequences.
+    inputs:
+      reversibility:
+        values: [reversible, irreversible]
+      scope:
+        values: [item, resource, user, global]
+      hasDependencies:
+        type: boolean
+      executionMode:
+        values: [immediate, asynchronous]
+    behavioralGuidance:
+      - Confirmation burden should reflect reversibility, scope, and consequence.
+      - Disclose affected dependencies before confirmation when they are known.
+      - Do not add confirmation to every danger-styled action; document intentional immediate-action variants.
+      - Provide progress and completion feedback for asynchronous actions.
+    accessibility:
+      - Move focus into confirmation surfaces and restore it appropriately on close.
+      - Associate consequence text and acknowledgement controls with the confirmation surface.
+    rules:
+      - FELT-DA-001
+      - FELT-DA-002
+      - FELT-DA-003
+      - FELT-DA-004
+    provenance:
+      - NEX-01
+      - NEX-02
+      - NEX-03
+      - NEX-04
+      - SYN-10
+
+  - id: felt.pattern.permission-aware-content
+    version: 0.1.0
+    title: Permission-aware content and navigation
+    intent: Prevent users from seeing or following controls and destinations they cannot access.
+    behavioralGuidance:
+      - Prefer hide-until-confirmed over show-until-denied for protected controls.
+      - Do not link navigation elements to inaccessible destinations.
+      - Distinguish permission resolution from data loading and data errors.
+      - Avoid replacing a previously confirmed accessible surface merely because data is refreshing.
+    rules:
+      - FELT-PC-001
+      - FELT-PC-002
+      - FELT-PC-003
+    provenance:
+      - SYN-06
+      - SYN-07
+
+  - id: felt.pattern.composed-surface-heading
+    version: 0.1.0
+    title: Composed surface headings
+    intent: Give drawers, panels, tabs, and documents one clear visible title and accessible name.
+    inputs:
+      titleOwner:
+        values: [shell, document]
+    behavioralGuidance:
+      - Choose whether the shell or the document owns the visible title.
+      - Do not repeat the same title in both shell chrome and document content.
+      - Preserve a valid heading hierarchy when content moves between page, drawer, and tab contexts.
+    accessibility:
+      - Every composed surface needs an accessible name.
+      - Close controls need accessible labels.
+    rules:
+      - FELT-SH-001
+      - FELT-SH-002
+      - FELT-SH-003
+    provenance:
+      - HVS-04
+
+  - id: felt.pattern.navigable-row
+    version: 0.1.0
+    title: Navigable rows with nested actions
+    intent: Preserve expected link and keyboard behavior when an entire row represents a destination.
+    behavioralGuidance:
+      - Use link semantics when the primary row action navigates to a destination.
+      - Preserve modified-click, middle-click, focus, and open-in-new-tab behavior.
+      - Nested controls must remain independently operable without triggering row navigation.
+    rules:
+      - FELT-NR-001
+      - FELT-NR-002
+      - FELT-NR-003
+    provenance:
+      - SYN-08
+
