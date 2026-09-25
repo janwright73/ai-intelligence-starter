@@ -64,6 +64,56 @@ Source: `redhat/hummingbird/tools`, `.cursor/skills/visible-scaffolding/SKILL.md
 | HVS-04 | Shell chrome and document content must not display duplicate titles; use one visible title and a clear accessible naming strategy. | Felt candidate | Felt | `composed-surface-heading` | Rendered DOM plus accessibility audit | This is a visible, cross-product UX and accessibility requirement. |
 | HVS-05 | Validate presentation in the running UI; type checking and apparently correct code structure are insufficient. | Workflow helper | UXD AI Helpers | `render-and-validate` | Workflow enforcement | This belongs in the implementation and audit workflow. |
 
+## UXD AI Helpers coverage
+
+Reviewed against [`rh-uxd/ai-helpers`](https://github.com/rh-uxd/ai-helpers) at commit [`96905d2`](https://github.com/rh-uxd/ai-helpers/commit/96905d2) on 2026-09-25.
+
+Coverage describes the current AI Helpers capability, not ownership of the instruction:
+
+- **Direct** — an existing skill substantially implements or validates the instruction.
+- **Partial** — a useful workflow, generator, or validator exists, but the exact behavior or product mapping is absent.
+- **Gap** — no current AI Helper meaningfully implements or validates the instruction.
+
+AI Helpers should orchestrate and deliver this guidance rather than become a second source of truth. Felt canonical records and rule IDs remain owned by FELTRFE-75, behavioral guidance by FELTRFE-43, and executable validation contracts by FELTRFE-19. Product-specific names, wrappers, and exceptions remain in product overlays.
+
+| ID | Coverage | Supporting AI Helper skill or capability | Remaining Felt or product responsibility |
+|---|---|---|---|
+| SYN-01 | Partial | [`pf-component-reuse-check`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-react/skills/pf-component-reuse-check/SKILL.md), [`pf-screenshot-mapping`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-design-guide/skills/pf-screenshot-mapping/SKILL.md), and `pf-create-issue` support PatternFly-first discovery and gap reporting. | Define a shared gap-escalation workflow, override metadata, ownership, and resolution lifecycle. |
+| SYN-02 | Gap | AI Helpers has a general product-overlay mechanism, but no Syntara component mapping. | Syntara owns the `Syn*` wrapper map and its versioning; FELTRFE-75 defines the overlay contract. |
+| SYN-03 | Partial | `pf-component-check` audits PatternFly hierarchy; `pf-screenshot-mapping` maps page regions to PF structures. | Felt defines page-archetype intent; Syntara maps that intent to `SynPage`, `SynPanel`, and local shells. |
+| SYN-04 | Direct | [`pf-state-audit`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-code-review/skills/pf-state-audit/SKILL.md), `pf-test-gen`, and `uxd-design-handoff` cover loading, error, empty, and populated states. | Add refreshing, filtered-empty, stable-identity guidance, Syntara prop mappings, and `FELT-AS-*` rule IDs. |
+| SYN-05 | Partial | `pf-form-gen` places an `ActionGroup` last in a form and generates Save/Cancel structures. | Define pinned-footer intent and exceptions; Syntara maps it to its panel footer. |
+| SYN-06 | Partial | `pf-state-audit` detects unauthorized-state gaps. | Define hide-until-resolved behavior, prevent unauthorized-content flashing, and add permission-loading validation. |
+| SYN-07 | Gap | Existing skills inspect breadcrumbs and links for general structure or security, not effective authorization. | Felt defines permission-aware navigation; the product overlay supplies route and permission knowledge. |
+| SYN-08 | Partial | `pf-a11y-keyboard`, `pf-a11y-audit`, and interaction-pattern lookup provide live interaction and semantic checks. | Add real-link row rules, modified/middle-click tests, nested-control independence, and product row mapping. |
+| SYN-09 | Partial | `pf-form-gen` supports warning/error states, validation messages, and async submission states. | Define which severities block actions; Syntara owns publish consequences and save-feedback mapping. |
+| SYN-10 | Partial | `pf-form-gen` and `pf-test-gen` can disable controls during async work and test duplicate interaction branches. | Syntara owns the cancel-run exception; Felt may generalize the slow one-shot action rule. |
+| NEX-01 | Partial | UXD heuristic evaluation can identify an unconfirmed destructive action; handoff can generate testable confirmation criteria. | Define the complete irreversible-action contract, acknowledgement requirement, severity, and rule IDs. |
+| NEX-02 | Gap | No current skill distinguishes confirmation burden by reversibility. | Felt defines the reversible-action tier and prohibition on unnecessary destructive acknowledgement. |
+| NEX-03 | Gap | No current skill calculates confirmation severity from item/resource/user/global scope. | Felt defines the scope model and mappings; product overlays classify local actions. |
+| NEX-04 | Partial | Prototype creation/evaluation can model success feedback and navigation outcomes. | Felt defines post-action feedback intent; product overlays provide routes, cache behavior, and local messages. |
+| NEX-05 | Partial | `pf-component-reuse-check` discourages unnecessary custom controls and verifies replacements. | Extend reuse analysis to repository-local confirmation compositions and product-owned shared wrappers. |
+| HOF-01 | Gap | No existing skill enforces outline-first authoring, one visible scaffold, or one return. | Hummingbird owns the initial overlay; UXD may add a general outline-first workflow helper after validation. |
+| HOF-02 | Gap | Component hierarchy audits do not enforce concern-aligned file ownership. | Hummingbird owns section/file boundaries and shell responsibilities in its product overlay. |
+| HOF-03 | Direct | `pf-state-audit`, `pf-test-gen`, and `uxd-design-handoff` require explicit loading, error, empty, and populated branches. | Connect the skills to `felt.pattern.asynchronous-content`, including stable identity and canonical rule IDs. |
+| HOF-04 | Partial | PatternFly coding standards recognize React context for shared state. | Hummingbird defines provider boundaries and when context replaces prop drilling. |
+| HOF-05 | Direct | `pf-component-reuse-check` searches current PatternFly documentation, verifies API fit, and recommends composition before a custom control. | Extend the search order to product primitives and sections through the product overlay. |
+| HVS-01 | Partial | `pf-test-gen` tests `className` merging and extra-prop forwarding for library components. | Hummingbird defines public-component scope and CSS-variable-safe `style` forwarding. |
+| HVS-02 | Partial | `pf-component-reuse-check` plus PatternFly MCP can confirm current PF component APIs and props. | Add an explicit prop-subtraction workflow and product-type comparison. |
+| HVS-03 | Gap | No current skill evaluates whether a reusable name is independent of its first consumer. | Keep as product or general engineering naming guidance rather than a Felt UX rule. |
+| HVS-04 | Partial | `pf-a11y-audit`, `pf-a11y-test-gen`, and design checks cover accessible names and heading structure. | Add shell/document title ownership and rendered duplicate-title detection under `composed-surface-heading`. |
+| HVS-05 | Direct | `uxd-prototype-evaluate` uses rendered browser evaluation; `pf-a11y-keyboard` performs live interaction checks; reuse workflows build after changes. | Standardize required evidence and return FELTRFE-19 diagnostics and rule IDs. |
+
+### Coverage summary
+
+| Coverage | Count | Interpretation |
+|---|---:|---|
+| Direct | 4 | Existing skills substantially support the rule and mainly need canonical Felt identifiers or product mappings. |
+| Partial | 14 | AI Helpers provides reusable infrastructure, but the exact behavioral contract is not yet encoded. |
+| Gap | 7 | A new Felt rule, product overlay, or focused workflow helper is required. |
+
+The strongest initial integration points are `pf-state-audit`, `pf-component-reuse-check`, `uxd-design-handoff`, `uxd-prototype-create`, and `uxd-prototype-evaluate`. They should retrieve Felt records and product overlays at runtime or consume generated references rather than duplicate canonical guidance in each skill.
+
 ## Inventory findings
 
 ### Strong initial Felt candidates
@@ -89,4 +139,3 @@ Source: `redhat/hummingbird/tools`, `.cursor/skills/visible-scaffolding/SKILL.md
 - Product folder structures and file naming.
 - Local hooks, route conventions, endpoints, constants, and labels.
 - Product-specific action exceptions and validation consequences.
-
