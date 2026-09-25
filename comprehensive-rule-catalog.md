@@ -231,6 +231,110 @@ Priority indicates the recommended next action: `seed` for the first Felt catalo
 | HVS-029 | Loading, error, empty, and ready remain visible branches under the content root; stable title/preamble stays visible when identity is known. | Felt candidate | seed | Async states |
 | HVS-030 | Validate the running interface after architectural changes, including whole-surface effects, heading duplication, focus/ARIA, deep links, and async states. | AI-helper workflow | helper | Enterprise checklist |
 
+## UXD AI Helpers integration and coverage
+
+Reviewed against [`rh-uxd/ai-helpers`](https://github.com/rh-uxd/ai-helpers) at commit [`35c3069`](https://github.com/rh-uxd/ai-helpers/commit/35c3069) on 2026-09-25.
+
+Coverage uses the same model as `instruction-inventory.md`:
+
+- **Direct** — an existing skill substantially implements or validates the rule family.
+- **Partial** — a useful generator, workflow, or validator exists, but the exact Felt behavior or product mapping is absent.
+- **Gap** — no existing AI Helper meaningfully implements or validates the rule family.
+
+Coverage does not transfer ownership to AI Helpers. FELTRFE-75 remains the source for canonical patterns and applicability, FELTRFE-43 supplies agent guidance, FELTRFE-19 supplies executable validation contracts, and product teams own overlays and explicit exceptions. AI Helpers is the delivery, orchestration, generation, and evaluation layer.
+
+### Relevant existing AI Helper files
+
+| Skill | Current contribution to the layered approach |
+|---|---|
+| [`pf-component-reuse-check`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-react/skills/pf-component-reuse-check/SKILL.md) | Searches current PatternFly documentation, identifies overlapping custom components, proposes reuse, and builds to verify replacements. |
+| [`pf-component-check`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-react/skills/pf-component-check/SKILL.md) | Audits PatternFly nesting, wrapper hierarchies, and structural composition. |
+| [`pf-state-audit`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-code-review/skills/pf-state-audit/SKILL.md) | Audits loading, error, empty, and unauthorized states in data-dependent UI. |
+| [`pf-table-gen`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-react/skills/pf-table-gen/SKILL.md) | Generates PatternFly tables with sorting, filtering, pagination, expansion, and empty-state composition. |
+| [`pf-form-gen`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-react/skills/pf-form-gen/SKILL.md) | Generates accessible PatternFly forms, validation, action groups, and async submission states. |
+| [`pf-test-gen`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-react/skills/pf-test-gen/SKILL.md) | Generates tests for conditional states, async behavior, interactions, callbacks, prop forwarding, and accessible APIs. |
+| [`pf-a11y-audit`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-a11y/skills/pf-a11y-audit/SKILL.md) | Performs static WCAG, semantic markup, accessible-name, and ARIA review. |
+| [`pf-a11y-test-gen`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-a11y/skills/pf-a11y-test-gen/SKILL.md) | Generates persistent axe, keyboard, ARIA, and focus-management tests. |
+| [`pf-a11y-keyboard`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-a11y/skills/pf-a11y-keyboard/SKILL.md) | Tests keyboard navigation and focus behavior in a running interface. |
+| [`pf-catalog-interaction-patterns`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-design-guide/skills/pf-catalog-interaction-patterns/SKILL.md) | Finds PatternFly components by click, hover, keyboard, and drag interaction behavior. |
+| [`pf-screenshot-mapping`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-design-guide/skills/pf-screenshot-mapping/SKILL.md) | Maps a screen to PatternFly structure and identifies component, composition, and documentation gaps. |
+| [`pf-css-token-check`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-design-audit/skills/pf-css-token-check/SKILL.md) | Detects hard-coded styling values and recommends semantic PatternFly tokens. |
+| [`pf-content-review`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-workshop/skills/pf-content-review/SKILL.md) | Reviews copy against PatternFly and Red Hat voice-and-tone guidance. |
+| [`pf-adversarial-review`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-code-review/skills/pf-adversarial-review/SKILL.md) | Probes missing states, boundary conditions, unsafe prop combinations, and defensive behavior. |
+| [`pf-review`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/patternfly/pf-code-review/skills/pf-review/SKILL.md) | Orchestrates PatternFly compliance checks and deduplicates findings into a prioritized report. |
+| [`uxd-design-handoff`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/uxd-design/skills/uxd-design-handoff/SKILL.md) | Produces component maps, state matrices, interaction specifications, accessibility notes, and testable acceptance criteria. |
+| [`uxd-prototype-create`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/uxd-prototype/skills/uxd-prototype-create/SKILL.md) | Plans and builds prototypes with journeys and alternate loading, empty, error, and edge-case scenarios. |
+| [`uxd-prototype-evaluate`](https://github.com/rh-uxd/ai-helpers/blob/main/plugins/uxd-prototype/skills/uxd-prototype-evaluate/SKILL.md) | Evaluates a rendered prototype, supports product overlays, exercises journeys, and produces screenshot-backed evidence. |
+
+### Ansible/Syntara rule crosswalk
+
+| Catalog rules | Coverage | Existing AI Helper support | Remaining Felt or product work |
+|---|---|---|---|
+| `ANS-DS-001`, `ANS-DS-008` | Partial | `pf-component-reuse-check`, `pf-component-check`, `pf-screenshot-mapping`, and PatternFly MCP retrieval use current PF information. | Establish one Felt retrieval contract so all skills obtain applicable canonical patterns as well as PF APIs. |
+| `ANS-DS-002`–`004`, `ANS-DS-007` | Direct | `pf-component-reuse-check` supplies search-before-create; `pf-screenshot-mapping` identifies structural gaps; `pf-review` supports verification. | Add UX escalation, temporary-override metadata, upstream issue linkage, and resolution-state handling. |
+| `ANS-DS-005`–`006` | Partial | Reuse and structural checks favor existing components and compositions. | Felt defines portable composition intent; Syntara supplies the `Syn*` mapping through a product overlay. |
+| `ANS-NAV-001`–`002` | Partial | `pf-catalog-interaction-patterns` and `pf-a11y-keyboard` cover interaction selection and live keyboard behavior. | Encode exact flyout timing, closing, hover, and product navigation behavior in the overlay. |
+| `ANS-NAV-003`–`010` | Partial | `pf-component-check`, `pf-screenshot-mapping`, `pf-state-audit`, and accessibility skills cover structure, shell persistence, states, headings, tabs, and navigation semantics. | Add canonical page-archetype, title-ownership, accessible-route, and tab-availability rules; map them to `Syn*`. |
+| `ANS-DATA-001`–`003` | Partial | `pf-table-gen`, `pf-state-audit`, and `pf-test-gen` cover tables, filters, states, async behavior, and tests. | Define refetch behavior, content preservation, state announcements, and product list-panel mapping. |
+| `ANS-DATA-004`–`007` | Direct | `pf-state-audit`, `uxd-design-handoff`, and `pf-test-gen` cover loading, error, empty, unauthorized, recovery, and conditional rendering. | Expand from the current four-state model to Felt applicability variants such as filtered-empty, first-use, configuration-required, and not-found. |
+| `ANS-DATA-008`–`010` | Direct | `pf-table-gen`, `pf-component-check`, and `pf-test-gen` generate and validate semantic table composition, pagination, variants, and behavior. | Product overlay supplies compact-table policy and timestamp/user presentation. |
+| `ANS-DATA-011`–`014` | Partial | Structural, accessibility, interaction, and test skills cover semantics and rendering. | Add semantic metadata-vs-status guidance, deleted-reference behavior, code-surface mapping, and structured-data view applicability. |
+| `ANS-FORM-001`–`004` | Partial | `pf-form-gen`, `pf-component-check`, and `uxd-design-handoff` support form structure, action groups, and handoff criteria. | Define cross-product placement criteria and overlay mappings for sticky panel footers and documented exceptions. |
+| `ANS-FORM-005`–`008` | Direct | `pf-form-gen`, `pf-test-gen`, `pf-a11y-audit`, and `pf-a11y-test-gen` cover validation, async submission, labels, error association, and tests. | Add abandonment/dirty-state and dependent-step semantics where they are not product-specific. |
+| `ANS-ACT-001`–`008` | Partial | UX heuristic evaluation, `uxd-design-handoff`, and general test/a11y skills can detect missing confirmation and produce acceptance criteria. | Create the Felt destructive-action record and validators for reversibility, acknowledgement, cascade, ripple effects, dependencies, and shared composition. |
+| `ANS-ACT-009`–`020` | Partial | `uxd-prototype-create`, `uxd-prototype-evaluate`, `pf-test-gen`, and `pf-adversarial-review` can model and verify outcomes, progress, disabled states, and feedback. | Encode confirmation tiers, scope escalation, over-confirmation prohibitions, non-dismissible exceptions, and proportional feedback as Felt rules. |
+| `ANS-PERM-001`–`014` | Partial | `pf-state-audit` recognizes unauthorized states; accessibility and test skills validate disabled controls, names, focus, and conditional output. | Add a permission-aware validator for hide-until-confirmed, route/tab/breadcrumb gating, handler removal, accessible explanations, and product permission-hook mappings. |
+| `ANS-WF-001`–`005` | Partial | `uxd-design-handoff`, `uxd-prototype-create`, and `uxd-prototype-evaluate` can specify and inspect hierarchy, status, lifecycle, and feedback. | Syntara owns the workflow lifecycle; Felt may retain dirty-state and nonredundant-feedback behavior. |
+| `ANS-WF-006`–`007` | Partial | `pf-a11y-audit`, `pf-a11y-keyboard`, `pf-a11y-test-gen`, and interaction lookup cover link and nested-control semantics generally. | Add browser tests for real anchors, modified/middle click, overlays, and independent nested targets. |
+| `ANS-WF-008`–`011` | Gap | Prototype skills can exercise these journeys but do not define the product behavior. | Keep version history, onboarding, run preference, and cancel-run exception in the Syntara overlay; expose only any approved general pattern. |
+| `ANS-WF-012`–`014` | Partial | Form, state, test, adversarial-review, and prototype-evaluation skills can represent severities and verify blocked/enabled outcomes. | Add stable Felt validation-severity rule IDs, publish applicability, remediation links, and diagnostic output. |
+| `ANS-WF-015` | Partial | `uxd-prototype-evaluate` can test supported viewport scenarios in a running prototype. | Product overlay defines the threshold; Felt defines the usable guarded-state expectation. |
+| `ANS-AX-001`–`009` | Direct | `pf-a11y-audit`, `pf-a11y-test-gen`, and `pf-a11y-keyboard` cover structure, headings, names, keyboard use, focus, ARIA, labeling, contrast-related checks, and alternatives. | Connect findings to Felt rule IDs and preserve product-specific focus utilities in the overlay. |
+| `ANS-AX-010` | Direct | The three accessibility skills explicitly combine static audit, persistent tests, and live keyboard evaluation. | Add screen-reader evidence expectations and evaluation fixtures where automation is insufficient. |
+| `ANS-CONT-001`–`003` | Partial | `pf-content-review`, accessibility review, and component mapping cover voice/tone and semantic component use. | Product overlay owns terminology/casing exceptions; Felt may define semantic status-vs-metadata guidance. |
+| `ANS-STYLE-001`–`004` | Direct | `pf-css-token-check`, `pf-component-reuse-check`, and `pf-review` detect hard-coded values, favor PF APIs, and audit compliance. | Product overlay owns approved exception tracking; PatternFly MCP remains the live API/token source. |
+| `ANS-VERIFY-001`–`004` | Direct | `pf-review`, `pf-a11y-keyboard`, `uxd-prototype-evaluate`, and generated tests supply code, browser, interaction, and evidence checks. | Standardize minimum Felt evidence and diagnostics for required state coverage and semantic rules. |
+
+### Hummingbird outline-first rule crosswalk
+
+| Catalog rules | Coverage | Existing AI Helper support | Remaining Felt or product work |
+|---|---|---|---|
+| `HOF-001`–`003` | Gap | Existing skills can test output but do not enforce return-as-spec, one scaffold, or visible structural conditionals. | Add an outline-first authoring helper or static analysis rule; keep framework-specific exceptions explicit. |
+| `HOF-004`–`010` | Gap | `pf-component-check` covers PatternFly component structure, not Hummingbird file ownership, shell boundaries, context usage, or `hb-content`. | Hummingbird supplies these mappings as a product architecture overlay. |
+| `HOF-011`–`013` | Direct | `pf-state-audit`, `uxd-design-handoff`, `pf-test-gen`, and prototype skills cover explicit async states and state evidence. | Add stable identity, shared-chrome/domain-empty distinctions, and Felt state IDs. |
+| `HOF-014`–`017` | Direct | `pf-component-reuse-check` implements search-before-create and PF schema comparison. | Extend its search order to product primitives/sections and formalize the abstraction threshold and PF-prop subtraction result. |
+| `HOF-018` | Partial | `pf-test-gen` tests `className` merging and spread-prop forwarding for component libraries. | Add CSS-variable-safe `style` forwarding and Hummingbird public-composition applicability in the product overlay. |
+| `HOF-019` | Gap | No current skill reviews comments specifically for rationale, constraints, or planned rehomes. | Add focused engineering-review guidance if UXD wants this convention across products. |
+| `HOF-020`–`021` | Direct | `pf-review`, `pf-test-gen`, `pf-a11y-keyboard`, and `uxd-prototype-evaluate` support staged verification and rendered evidence. | Add the Hummingbird relevance/dry-run sequence as an optional product workflow overlay. |
+
+### Hummingbird visible-scaffolding rule crosswalk
+
+| Catalog rules | Coverage | Existing AI Helper support | Remaining Felt or product work |
+|---|---|---|---|
+| `HVS-001`–`011` | Partial | Reuse, structure, review, and rendered-evaluation skills support inventory, root fixes, deduplication, and verification in general. | Hummingbird must supply its file layers, naming, namespace, drawer, relevance, and Git-move conventions. |
+| `HVS-012` | Partial | Prototype and accessibility skills can inspect mounted structure, transitions, and focus behavior. | Define when stable scaffolding is a cross-product behavior versus a product architecture rule. |
+| `HVS-013` | Gap | No current AI Helper enforces visible table/list scaffolding or rejects one-call-site ghost compositions. | Add to an outline-first/visible-scaffolding workflow helper if adopted across teams. |
+| `HVS-014`–`015` | Direct | `pf-component-reuse-check` searches before creation and challenges unnecessary custom components; structural review helps identify excess wrappers. | Extend it to prove whether an existing product parent can absorb refs, data attributes, and behavior. |
+| `HVS-016`–`017` | Partial | `pf-test-gen` tests `className` and root prop forwarding; structural review can inspect ownership. | Add `style` forwarding, named-variant ownership, and BEM-leak checks through the Hummingbird overlay or a general component-API rule. |
+| `HVS-018` | Direct | `pf-component-reuse-check` consults current PF documentation and compares intended roles/APIs. | Emit a structured PF-owned/product-owned field comparison and stable diagnostic. |
+| `HVS-019`–`020` | Gap | No current skill evaluates first-consumer coupling or the second-consumer threshold for names and compositions. | Add general engineering naming/abstraction guidance or retain it in the Hummingbird overlay. |
+| `HVS-021`–`022` | Gap | Generic structural and accessibility audits may reveal symptoms but do not understand Hummingbird shell vocabulary or slot routers. | Hummingbird overlay defines shell vocabulary, relevance, and prohibited router patterns. |
+| `HVS-023`–`025` | Gap | Current helpers do not distinguish hydration variables from hidden page structure or parser-owned structure. | Add outline-first static/evaluation checks if this becomes a reusable UXD engineering convention. |
+| `HVS-026` | Partial | Accessibility skills validate headings and accessible names. | Add composed-surface title ownership and rendered duplicate-title detection as a Felt rule. |
+| `HVS-027`–`029` | Partial | State, accessibility, test, and prototype skills validate roots, landmarks, state branches, and live behavior generally. | Hummingbird maps `hb-content` and scrolling; Felt defines stable identity, landmark sequencing, and async-state intent. |
+| `HVS-030` | Direct | `pf-review`, accessibility skills, tests, and `uxd-prototype-evaluate` collectively support whole-surface rendered validation. | Standardize the required evidence package and attach Felt diagnostic IDs. |
+
+### Integration implications
+
+The existing skills already provide most of the mechanics needed to deliver the layered system. The main gaps are not additional broad mega-skills; they are shared design-intelligence inputs and a few focused validators:
+
+1. **Felt retrieval adapter** — lets AI Helpers retrieve applicable FELTRFE-75 records, FELTRFE-43 guidance, rule IDs, and product-overlay mappings.
+2. **Destructive-action validator** — covers `ANS-ACT-*` confirmation tiers, dependencies, reversibility, scope, and exceptions.
+3. **Permission-aware validator** — covers `ANS-PERM-*`, especially hide-until-confirmed and inaccessible navigation.
+4. **Interaction-semantics validator** — covers real-link rows, modified clicks, nested controls, landmark sequencing, and title ownership.
+5. **Outline/scaffolding helper** — optional engineering workflow for `HOF-001`–`010` and `HVS-013`, `HVS-023`–`025`; initially delivered as a Hummingbird overlay until another product validates it.
+6. **Structured diagnostics** — existing audits should return FELTRFE-19 rule IDs, severity, evidence, and remediation rather than isolated prose findings.
+
 ## Consolidated findings
 
 The review yields **161 normalized, source-traceable rules**:
