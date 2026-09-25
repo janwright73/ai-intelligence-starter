@@ -1,82 +1,193 @@
-schemaVersion: "0.1"
+schemaVersion: "0.2"
 artifactOwner: FELTRFE-75
-status: illustrative
+status: proposed
+sourceCatalog: comprehensive-rule-catalog.md
+overlayContract:
+  mayDefine: [component-mappings, state-mappings, terminology, repository-architecture, routes, validators, explicit-exceptions]
+  mustNotRedefine: [canonical-pattern-intent, shared-rule-meaning, PatternFly-API]
+  requiredMetadata: [owner, source, version, applicability, rationale]
 
 products:
   - id: syntara
+    owner: Ansible-Syntara
+    source: .claude/skills/frontend-patternfly-ux/SKILL.md
+    sourceCommit: cf9dc06
     patterns:
       - patternId: felt.pattern.asynchronous-content
-        implementation:
-          component: SynListPanelView
-          source: frontend/packages/syntara-ui
-        stateMapping:
+        mappings:
+          listSurface: SynListPanelView
+          toolbar: SynListPanelToolbar
+          table: SynListPanelTable
           loading: isPending
           refreshing: isFetching
           empty: isEmpty
           filteredEmpty: hasActiveFilters
           ready: children
-        localRequirements:
-          - Use SynListPanelToolbar and SynListPanelTable for established list surfaces.
-          - Preserve the Syntara page shell during list-state changes.
+        requirements:
+          - Preserve SynPage, SynPageHeader, and SynPanel while list state changes.
+          - Disable toolbar controls accessibly during refetch without discarding valid content.
+          - Use SynEmptyStateNoData, SynEmptyStateFilter, SynErrorState, or SynEmptyStateAccessDenied according to condition.
+        provenance: [ANS-NAV-004, ANS-DATA-001, ANS-DATA-002, ANS-DATA-004]
 
-      - patternId: felt.pattern.destructive-action
-        implementation:
+      - patternId: felt.pattern.consequential-action
+        mappings:
           component: SynConfirmationDialog
-        variantMapping:
-          irreversible:
-            acknowledgement: destructiveAcknowledgement
-            actionVariant: danger
-          reversible:
-            acknowledgement: false
-            actionVariant: warning
+          reversible: { destructiveAcknowledgement: false, confirmVariant: danger }
+          irreversible: { destructiveAcknowledgement: true, confirmVariant: danger }
+          disable: { destructiveAcknowledgement: false, confirmVariant: primary }
+        dependencyVariants: [simple, cascade-delete, ripple-impact, combined]
         exceptions:
-          - id: syntara.destructive-action.cancel-running-execution
-            appliesWhen:
-              action: cancel-run
-              executionState: [pending, running]
-            behavior:
-              confirmation: false
-              selfDisableWhilePending: true
-              successFeedback: Execution cancellation requested
-            rationale: The action is a time-sensitive request to stop an in-progress operation and has an established product interaction.
+          - id: syntara.consequential-action.cancel-running-execution
+            appliesWhen: { action: cancel-run, executionState: [pending, running] }
+            behavior: { confirmation: false, selfDisableWhilePending: true, feedback: [pending, success, failure] }
+            rationale: Time-sensitive established stop request; confirmation adds less value than immediate duplicate-safe feedback.
+          - id: syntara.consequential-action.duplicate-workflow
+            appliesWhen: { action: duplicate-workflow }
+            behavior: { confirmation: false, selfDisableWhilePending: true, successDeepLink: true }
+            rationale: Reversible non-destructive creation action.
+        provenance: [ANS-ACT-001, ANS-ACT-002, ANS-ACT-003, ANS-ACT-004, ANS-ACT-005, ANS-ACT-010, ANS-ACT-011, ANS-ACT-012, ANS-ACT-014]
 
-      - patternId: felt.pattern.permission-aware-content
-        localRequirements:
-          - Build tabs only after permission loading completes.
-          - Remove or neutralize breadcrumb links to inaccessible parent routes.
+      - patternId: felt.pattern.permission-aware-experience
+        mappings:
+          permissionPrimitive: useCanI
+          domainHook: "use{Domain}Permissions"
+          disabledExplanation: DisabledWithTooltip
+          deniedState: SynEmptyStateAccessDenied
+          routeGuard: ProtectedRoute
+          tabs: SynUrlTabs
+        requirements:
+          - Default permission results to deny while loading.
+          - Build gated tab arrays only after resolution and redirect to the first visible tab when needed.
+          - Use isAriaDisabled plus undefined handlers for explained disabled actions.
+          - Pass undefined callbacks to hide unauthorized empty-state actions.
+          - Hide or neutralize breadcrumb links to inaccessible parents.
+        provenance: [ANS-PERM-001, ANS-PERM-002, ANS-PERM-003, ANS-PERM-004, ANS-PERM-005, ANS-PERM-006, ANS-PERM-010, ANS-PERM-013, ANS-PERM-014]
 
       - patternId: felt.pattern.navigable-row
-        implementation:
+        mappings:
           component: HistoryListItemLink
-        localRequirements:
-          - Preserve TanStack Router link behavior.
-          - Use the established overlay treatment when a row includes nested controls.
+          router: TanStack-Router-Link
+          nestedControlTechnique: overlay-link-with-raised-controls
+        requirements:
+          - Do not substitute SynLink because it renders button semantics.
+          - Preserve onSelect only for unmodified primary activation.
+        provenance: [ANS-WF-006, ANS-WF-007]
+
+      - patternId: felt.pattern.composed-surface-title
+        mappings:
+          pageTitle: SynPageHeader
+          browserTitle: "SynPageTitle/toPageTitle"
+        requirements:
+          - Resource names are plain title strings without decorative h1 icons.
+          - Route files provide dynamic titles with narrow-to-broad segments.
+        provenance: [ANS-NAV-008, ANS-AX-001]
+
+      - patternId: felt.pattern.form-actions-and-abandonment
+        mappings:
+          fullPageActions: SynPanel.footer
+          actionContainer: ActionGroup
+          dirtyGuard: useDirtyFormGuard
+        exceptions:
+          - { id: syntara.form-actions.builder, use: node-editor-panel-footer }
+          - { id: syntara.form-actions.modal, use: modal-footer }
+          - { id: syntara.form-actions.inline-query, use: inline-action-group }
+        provenance: [ANS-FORM-001, ANS-FORM-003, ANS-FORM-004, ANS-FORM-005]
+
+      - patternId: felt.pattern.validation-remediation
+        mappings:
+          aggregate: ValidationBanner
+          targetNavigation: useNodePanelNavigation
+          errorConsequence: blocks-publish-not-save
+          warningConsequence: blocks-neither-save-nor-publish
+        requirements:
+          - Publish verifies before opening its dialog.
+          - Node findings link to the node editor; global findings remain text.
+          - Existing validation issues trigger silent re-verification on load.
+        provenance: [ANS-WF-012, ANS-WF-013, ANS-WF-014]
+
+      - patternId: felt.pattern.post-action-feedback
+        mappings:
+          success: dismissible-success-toast
+          error: error-toast-with-api-message
+        requirements:
+          - Delete from detail navigates to list; delete from list stays and removes the item.
+          - Update and disable remain in context and update the visible state.
+          - Workflow update save uses dirty-state clearing and timestamp instead of a redundant toast.
+        provenance: [ANS-ACT-009, ANS-ACT-019, ANS-WF-004]
+
+    workflowOverlay:
+      retrieveBeforeCreate:
+        wrappers: [SynPage, SynPageHeader, SynPageBreadcrumbs, SynPanel, SynPanelContentStack, SynPanelStack, SynUrlTabs, SynConfirmationDialog, SynScrollableTableContainer]
+        gapTrackingLabel: patternfly-override
+      renderAndValidate:
+        tools: [Chrome-DevTools-MCP, Storybook]
+        requiredThemes: [light, dark]
+        provenance: [ANS-VERIFY-001, ANS-VERIFY-002, ANS-VERIFY-003, ANS-VERIFY-004]
 
   - id: hummingbird
+    owner: Hummingbird
+    source:
+      - .cursor/skills/outline-first-ui/SKILL.md
+      - .cursor/skills/visible-scaffolding/SKILL.md
+    sourceCommit: 7bccf40
     patterns:
       - patternId: felt.pattern.asynchronous-content
-        implementation:
-          loadingComponent: ContentStatus
-          errorComponent: ContentError
+        mappings:
           contentRoot: hb-content
-        stateMapping:
-          loading: isLoading
-          error: error
-          empty: isEmpty
-          ready: notLoadingAndNotEmpty
-        localRequirements:
-          - Keep async branches visible in the section return.
-          - Do not create sections named for loading or error chrome.
-          - Reuse shared hb-content spacing rather than per-tab layout dialects.
+          loading: ContentStatus
+          error: ContentError
+          states: { loading: isLoading, error: error, empty: isEmpty, ready: notLoadingAndNotEmpty }
+        requirements:
+          - Keep loading, error, empty, and ready branches visible in the section return.
+          - Keep stable tab title or preamble visible while the async body loads.
+          - Share status chrome as a primitive but retain domain-specific empty meaning.
+          - Do not create loading or error section files.
+        provenance: [HOF-011, HOF-012, HOF-013, HVS-029]
 
-      - patternId: felt.pattern.composed-surface-heading
-        localRequirements:
-          - Section outlines remain in the page entry section files.
-          - Drawer shell files do not inject a duplicate document heading.
-          - Scroll landmarks live on the relevant content section rather than the shared shell root.
+      - patternId: felt.pattern.composed-surface-title
+        mappings:
+          contentRoot: section.hb-content
+          documentOwner: page-entry-section-file
+          shellOwner: app-drawer-panel
+        requirements:
+          - Choose shell or document as title owner; do not fill both.
+          - Section headings begin below the page heading level.
+          - Scroll landmarks live on semantic content sections, not the shared shell root.
+        prohibited:
+          - app-drawer-panel-content slot routers that duplicate title ownership
+          - shell and section files sharing panel, drawer, or tab stems
+        provenance: [HOF-008, HOF-009, HVS-021, HVS-022, HVS-026, HVS-027]
 
-    workflowGuidance:
-      - Search existing PatternFly components, primitives, and sections before adding a new abstraction.
-      - Use concern-aligned files and one readable scaffold.
-      - Render and smoke-test affected pages and drawers before completion.
-
+    workflowOverlay:
+      outlineFirst:
+        requirements:
+          - Use one scaffold and one return with visible structural conditionals.
+          - Variables hydrate visible slots but do not hide sections or duplicate scaffolds.
+          - One concern-aligned section file owns each user-facing outline.
+          - Parse external input into data and render explicit semantic elements.
+        provenance: [HOF-001, HOF-002, HOF-003, HOF-004, HVS-023, HVS-024, HVS-025]
+      architecture:
+        layers:
+          app: once-per-app-shell
+          components: reusable-Hb-kit
+          primitives: reusable-widget
+          pages: page-documents-and-compositions
+        contentRoot: hb-content
+        noFeaturesLayer: true
+        provenance: [HOF-004, HOF-005, HOF-008, HVS-004, HVS-005, HVS-006]
+      retrieveBeforeCreate:
+        searchOrder: [PatternFly, existing-parent, primitives, components, sections, shells, hooks]
+        abstractionThreshold: two-equivalent-consumers
+        subtractPatternFlyProps: true
+        provenance: [HOF-014, HOF-015, HOF-016, HOF-017, HVS-014, HVS-015, HVS-018]
+      componentApi:
+        rootExtensions: [className, css-variable-safe-style]
+        realVariantsUseNamedProps: true
+        provenance: [HOF-018, HVS-016, HVS-017]
+      naming:
+        principle: name-the-thing-not-first-consumer
+        pageCompositionsRemainLocalUntilSecondConsumer: true
+        provenance: [HOF-006, HVS-019, HVS-020]
+      renderAndValidate:
+        required: [type-check, targeted-tests, live-smoke, heading-and-aria-review, async-state-review, deep-link-review]
+        provenance: [HOF-020, HOF-021, HVS-030]

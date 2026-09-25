@@ -235,7 +235,7 @@ Priority indicates the recommended next action: `seed` for the first Felt catalo
 
 Reviewed against [`rh-uxd/ai-helpers`](https://github.com/rh-uxd/ai-helpers) at commit [`35c3069`](https://github.com/rh-uxd/ai-helpers/commit/35c3069) on 2026-09-25.
 
-Coverage uses the same model as `instruction-inventory.md`:
+Coverage uses a three-level support model:
 
 - **Direct** — an existing skill substantially implements or validates the rule family.
 - **Partial** — a useful generator, workflow, or validator exists, but the exact Felt behavior or product mapping is absent.

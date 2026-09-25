@@ -1,159 +1,51 @@
-schemaVersion: "0.1"
+schemaVersion: "0.2"
 artifactOwner: FELTRFE-19
-status: illustrative
+status: proposed-seed
+sourceCatalog: comprehensive-rule-catalog.md
+note: >-
+  Candidate validation contracts for the eight consolidated pattern families.
+  Deterministic enforcement requires product adapters where domain knowledge is needed.
 
 rules:
-  - id: FELT-AS-001
-    patternId: felt.pattern.asynchronous-content
-    statement: Loading, error, empty, and ready must be distinguishable states.
-    defaultSeverity: error
-    enforcement: partially-deterministic
-    suggestedValidators: [component-test, rendered-dom]
-    diagnostic:
-      message: The surface uses one branch for states that require different user feedback.
-      remediation: Represent loading, error, empty, and ready separately.
+  - { id: FELT-AS-001, patternId: felt.pattern.asynchronous-content, statement: "Every applicable async state is represented distinctly.", severity: error, enforcement: component-test, validators: [pf-state-audit, pf-test-gen], remediation: "Model loading, refreshing, error, empty, filtered-empty, permission-loading, and ready separately." }
+  - { id: FELT-AS-002, patternId: felt.pattern.asynchronous-content, statement: "Accurate stable surface identity remains visible while its body loads.", severity: warning, enforcement: rendered-evaluation, validators: [uxd-prototype-evaluate], remediation: "Keep the title or stable shell visible and gate only the unresolved body." }
+  - { id: FELT-AS-003, patternId: felt.pattern.asynchronous-content, statement: "Background refresh preserves current valid content.", severity: error, enforcement: component-test, validators: [pf-state-audit, pf-test-gen], remediation: "Retain current content and expose a refreshing state." }
+  - { id: FELT-AS-004, patternId: felt.pattern.asynchronous-content, statement: "Meaningful async status and disabled controls are exposed accessibly.", severity: error, enforcement: rendered-accessibility, validators: [pf-a11y-audit, pf-a11y-test-gen], remediation: "Add an accessible status/name and explanation for temporarily unavailable controls." }
+  - { id: FELT-AS-005, patternId: felt.pattern.asynchronous-content, statement: "An empty state explains its domain condition and applicable recovery.", severity: warning, enforcement: evaluation, validators: [pf-state-audit, uxd-design-handoff], remediation: "Differentiate first-use, filtered-empty, error, denied, and not-found outcomes." }
 
-  - id: FELT-AS-002
-    patternId: felt.pattern.asynchronous-content
-    statement: A stable page or section identity should remain visible while its body loads.
-    defaultSeverity: warning
-    enforcement: evaluation
-    diagnostic:
-      message: Loading removes the stable identity of this surface.
-      remediation: Keep the accurate title or shell visible and gate only the asynchronous body.
+  - { id: FELT-CA-001, patternId: felt.pattern.consequential-action, statement: "Confirmation burden matches reversibility, consequence, dependencies, and scope.", severity: error, enforcement: product-adapter, validators: [felt-consequential-action-check], remediation: "Select the confirmation tier from the action's declared consequence inputs." }
+  - { id: FELT-CA-002, patternId: felt.pattern.consequential-action, statement: "Irreversible actions disclose consequences and require deliberate acknowledgement.", severity: error, enforcement: product-adapter, validators: [felt-consequential-action-check, component-test], remediation: "Add explicit irreversible copy and acknowledgement before enabling confirmation." }
+  - { id: FELT-CA-003, patternId: felt.pattern.consequential-action, statement: "Known cascade and ripple effects are disclosed before confirmation.", severity: error, enforcement: product-adapter, validators: [felt-consequential-action-check], remediation: "List deleted or affected dependencies, or explain why the dependency check is unavailable." }
+  - { id: FELT-CA-004, patternId: felt.pattern.consequential-action, statement: "Safe expected reversible actions are not unnecessarily confirmed.", severity: warning, enforcement: evaluation, validators: [felt-consequential-action-check], remediation: "Remove confirmation or document a concrete risk that justifies it." }
+  - { id: FELT-CA-005, patternId: felt.pattern.consequential-action, statement: "A slow one-shot action prevents duplicates and exposes pending and final outcomes.", severity: error, enforcement: interaction-test, validators: [pf-test-gen, uxd-prototype-evaluate], remediation: "Self-disable while pending and provide progress, success, and failure feedback." }
 
-  - id: FELT-AS-003
-    patternId: felt.pattern.asynchronous-content
-    statement: A background refresh must not be presented as an initial empty load.
-    defaultSeverity: error
-    enforcement: deterministic-with-product-adapter
-    diagnostic:
-      message: Existing content disappears during background refresh.
-      remediation: Preserve current content and communicate the refresh state.
+  - { id: FELT-PA-001, patternId: felt.pattern.permission-aware-experience, statement: "Protected UI is absent until permission resolution confirms access.", severity: error, enforcement: component-test, validators: [felt-permission-check], remediation: "Default to deny and render protected UI only after confirmation." }
+  - { id: FELT-PA-002, patternId: felt.pattern.permission-aware-experience, statement: "Navigation and breadcrumbs do not link to inaccessible destinations.", severity: error, enforcement: integration-test, validators: [felt-permission-check], remediation: "Remove the destination, hide the item, or render non-link text." }
+  - { id: FELT-PA-003, patternId: felt.pattern.permission-aware-experience, statement: "Protected routes distinguish checking, verification error, denied, and allowed states.", severity: error, enforcement: product-adapter, validators: [felt-permission-check, pf-state-audit], remediation: "Model permission resolution independently from route data." }
+  - { id: FELT-PA-004, patternId: felt.pattern.permission-aware-experience, statement: "Read-only mode preserves content and removes or accessibly disables mutations.", severity: error, enforcement: product-adapter, validators: [felt-permission-check, pf-a11y-audit], remediation: "Keep readable content and gate every edit affordance consistently." }
+  - { id: FELT-PA-005, patternId: felt.pattern.permission-aware-experience, statement: "A disabled protected action explains why and cannot execute.", severity: error, enforcement: component-test, validators: [felt-permission-check, pf-a11y-test-gen], remediation: "Provide a focusable explanation and remove the action handler." }
+  - { id: FELT-PA-006, patternId: felt.pattern.permission-aware-experience, statement: "Unauthorized primary actions are absent from empty and dependent inline states.", severity: error, enforcement: product-adapter, validators: [felt-permission-check], remediation: "Hide the CTA or replace the link with non-actionable guidance." }
 
-  - id: FELT-AS-004
-    patternId: felt.pattern.asynchronous-content
-    statement: Meaningful asynchronous status changes must be exposed accessibly.
-    defaultSeverity: error
-    enforcement: rendered-accessibility
-    diagnostic:
-      message: The loading or update status has no accessible name or announcement.
-      remediation: Add an appropriate accessible label or status region.
+  - { id: FELT-NR-001, patternId: felt.pattern.navigable-row, statement: "A row whose primary behavior is navigation uses real link semantics.", severity: error, enforcement: rendered-dom, validators: [felt-interaction-semantics-check], remediation: "Use an anchor or router link rather than a button or click-only container." }
+  - { id: FELT-NR-002, patternId: felt.pattern.navigable-row, statement: "Modified click, middle click, focus, and open-in-new-tab behavior work.", severity: error, enforcement: browser-test, validators: [felt-interaction-semantics-check], remediation: "Preserve native link behavior and avoid intercepting modified clicks." }
+  - { id: FELT-NR-003, patternId: felt.pattern.navigable-row, statement: "Nested controls operate without triggering row navigation.", severity: error, enforcement: browser-test, validators: [felt-interaction-semantics-check, pf-a11y-keyboard], remediation: "Separate nested hit targets and event behavior from the row destination." }
 
-  - id: FELT-DA-001
-    patternId: felt.pattern.destructive-action
-    statement: Irreversible actions require deliberate confirmation.
-    defaultSeverity: error
-    enforcement: deterministic-with-product-adapter
-    diagnostic:
-      message: An irreversible action is available without the required confirmation tier.
-      remediation: Apply the irreversible-action confirmation variant.
+  - { id: FELT-CT-001, patternId: felt.pattern.composed-surface-title, statement: "A composed surface has an accessible name and one visible title owner.", severity: error, enforcement: rendered-accessibility, validators: [pf-a11y-audit, felt-interaction-semantics-check], remediation: "Associate the surface with its designated shell or document title." }
+  - { id: FELT-CT-002, patternId: felt.pattern.composed-surface-title, statement: "Shell chrome and document content do not repeat the same visible title.", severity: warning, enforcement: rendered-dom, validators: [felt-interaction-semantics-check], remediation: "Remove one visible title while preserving the accessible name." }
+  - { id: FELT-CT-003, patternId: felt.pattern.composed-surface-title, statement: "Heading hierarchy and landmarks remain valid in the composed context.", severity: error, enforcement: rendered-accessibility, validators: [pf-a11y-audit, pf-a11y-test-gen], remediation: "Adjust heading levels and landmark ownership for the containing surface." }
+  - { id: FELT-CT-004, patternId: felt.pattern.composed-surface-title, statement: "Every routed page provides a meaningful dynamic browser title.", severity: error, enforcement: product-adapter, validators: [felt-interaction-semantics-check], remediation: "Set the page-specific title through the product title utility." }
 
-  - id: FELT-DA-002
-    patternId: felt.pattern.destructive-action
-    statement: Known affected dependencies must be disclosed before confirmation.
-    defaultSeverity: error
-    enforcement: component-test-or-human-review
-    diagnostic:
-      message: The confirmation does not disclose affected dependent resources.
-      remediation: Explain or list affected dependencies before acknowledgement.
+  - { id: FELT-FA-001, patternId: felt.pattern.form-actions-and-abandonment, statement: "Form completion actions remain predictably placed relative to scrolling content.", severity: warning, enforcement: rendered-evaluation, validators: [uxd-prototype-evaluate], remediation: "Use the approved page, panel, modal, wizard, or inline action placement." }
+  - { id: FELT-FA-002, patternId: felt.pattern.form-actions-and-abandonment, statement: "Cancel is secondary and returns to the correct origin without saving.", severity: error, enforcement: interaction-test, validators: [pf-test-gen], remediation: "Use secondary cancel treatment and verify navigation and mutation behavior." }
+  - { id: FELT-FA-003, patternId: felt.pattern.form-actions-and-abandonment, statement: "Meaningful unsaved changes trigger a clear stay-or-leave decision.", severity: error, enforcement: interaction-test, validators: [pf-test-gen, uxd-prototype-evaluate], remediation: "Track dirty state and guard abandonment only when meaningful changes exist." }
+  - { id: FELT-FA-004, patternId: felt.pattern.form-actions-and-abandonment, statement: "Dependent selections reset or invalidate after an upstream choice changes.", severity: error, enforcement: component-test, validators: [pf-test-gen], remediation: "Clear dependent state and prevent invalid forward progress." }
 
-  - id: FELT-DA-003
-    patternId: felt.pattern.destructive-action
-    statement: Confirmation burden must increase for materially broader scope.
-    defaultSeverity: warning
-    enforcement: evaluation
-    diagnostic:
-      message: The confirmation tier may not reflect the scope of this action.
-      remediation: Review the resource, user, or global scope requirements.
+  - { id: FELT-VR-001, patternId: felt.pattern.validation-remediation, statement: "Severity consistently determines whether an operation is blocked.", severity: error, enforcement: product-adapter, validators: [felt-validation-check], remediation: "Apply the documented error, warning, and information consequences." }
+  - { id: FELT-VR-002, patternId: felt.pattern.validation-remediation, statement: "Blocking errors and nonblocking warnings remain distinguishable.", severity: error, enforcement: rendered-dom, validators: [felt-validation-check, pf-a11y-audit], remediation: "Expose severity through semantics, text, and appropriate presentation." }
+  - { id: FELT-VR-003, patternId: felt.pattern.validation-remediation, statement: "Targeted findings link to the affected object or control.", severity: warning, enforcement: interaction-test, validators: [felt-validation-check], remediation: "Provide a focus or navigation path to the failing target." }
+  - { id: FELT-VR-004, patternId: felt.pattern.validation-remediation, statement: "A validation-disabled operation explains what remains unresolved.", severity: error, enforcement: component-test, validators: [felt-validation-check, pf-a11y-test-gen], remediation: "Add an accessible explanation tied to the disabled operation." }
 
-  - id: FELT-DA-004
-    patternId: felt.pattern.destructive-action
-    statement: A slow one-shot action must prevent duplicate submission and communicate progress.
-    defaultSeverity: error
-    enforcement: component-test
-    diagnostic:
-      message: The action remains invokable while its request is pending.
-      remediation: Disable or self-lock the action and expose pending status.
-
-  - id: FELT-PC-001
-    patternId: felt.pattern.permission-aware-content
-    statement: Protected controls must not appear before access is confirmed.
-    defaultSeverity: error
-    enforcement: component-test
-    diagnostic:
-      message: Protected UI is visible while permission resolution is incomplete.
-      remediation: Hide it until access is confirmed.
-
-  - id: FELT-PC-002
-    patternId: felt.pattern.permission-aware-content
-    statement: Navigation must not link to a destination the user cannot access.
-    defaultSeverity: error
-    enforcement: integration-test
-    diagnostic:
-      message: This navigation element links to an inaccessible destination.
-      remediation: Remove the link, render non-link text, or provide an accessible route.
-
-  - id: FELT-PC-003
-    patternId: felt.pattern.permission-aware-content
-    statement: Permission loading and data loading must not be conflated.
-    defaultSeverity: warning
-    enforcement: component-test
-    diagnostic:
-      message: The surface cannot distinguish unresolved permission from unresolved data.
-      remediation: Model permission resolution separately from the data request.
-
-  - id: FELT-SH-001
-    patternId: felt.pattern.composed-surface-heading
-    statement: A composed surface must have an accessible name.
-    defaultSeverity: error
-    enforcement: rendered-accessibility
-    diagnostic:
-      message: The drawer, panel, or dialog does not have an accessible name.
-      remediation: Associate the surface with its visible heading or provide an accessible label.
-
-  - id: FELT-SH-002
-    patternId: felt.pattern.composed-surface-heading
-    statement: Shell chrome and document content must not repeat the same visible title.
-    defaultSeverity: warning
-    enforcement: rendered-dom
-    diagnostic:
-      message: The same title appears in both shell chrome and document content.
-      remediation: Select one visible title owner and preserve accessible naming.
-
-  - id: FELT-SH-003
-    patternId: felt.pattern.composed-surface-heading
-    statement: Heading hierarchy must remain valid in the composed context.
-    defaultSeverity: error
-    enforcement: rendered-accessibility
-    diagnostic:
-      message: The composed surface has an invalid or ambiguous heading hierarchy.
-      remediation: Adjust heading levels for the page, drawer, panel, or tab context.
-
-  - id: FELT-NR-001
-    patternId: felt.pattern.navigable-row
-    statement: A row whose primary action navigates must use link semantics.
-    defaultSeverity: error
-    enforcement: rendered-dom
-    diagnostic:
-      message: The navigable row is implemented as a button or click handler rather than a link.
-      remediation: Use an anchor or router link that preserves browser navigation behavior.
-
-  - id: FELT-NR-002
-    patternId: felt.pattern.navigable-row
-    statement: Modified click and open-in-new-tab behavior must be preserved.
-    defaultSeverity: error
-    enforcement: browser-test
-    diagnostic:
-      message: The row cannot be opened in a new tab using standard browser interaction.
-      remediation: Use real link semantics and avoid intercepting modified clicks.
-
-  - id: FELT-NR-003
-    patternId: felt.pattern.navigable-row
-    statement: Nested controls must remain independently operable.
-    defaultSeverity: error
-    enforcement: browser-test
-    diagnostic:
-      message: Activating a nested control also triggers row navigation.
-      remediation: Separate the nested control interaction from the row destination.
-
+  - { id: FELT-PF-001, patternId: felt.pattern.post-action-feedback, statement: "Successful actions immediately remove or update stale information.", severity: error, enforcement: product-adapter, validators: [pf-test-gen], remediation: "Update the list, detail, cache, or status after success." }
+  - { id: FELT-PF-002, patternId: felt.pattern.post-action-feedback, statement: "The interface preserves context unless that context no longer exists.", severity: warning, enforcement: interaction-test, validators: [uxd-prototype-evaluate], remediation: "Stay in place for updates and navigate only when the current resource is gone." }
+  - { id: FELT-PF-003, patternId: felt.pattern.post-action-feedback, statement: "Pending, success, and failure feedback avoids duplicating an obvious state change.", severity: warning, enforcement: evaluation, validators: [uxd-prototype-evaluate], remediation: "Choose the smallest feedback channel that makes the outcome clear." }
+  - { id: FELT-PF-004, patternId: felt.pattern.post-action-feedback, statement: "Failure feedback preserves recovery context and actionable error information.", severity: error, enforcement: rendered-evaluation, validators: [pf-adversarial-review, uxd-prototype-evaluate], remediation: "Keep user input/context and provide a realistic retry or correction path." }

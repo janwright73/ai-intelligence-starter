@@ -1,132 +1,132 @@
-schemaVersion: "0.1"
-catalogStatus: illustrative
+schemaVersion: "0.2"
+artifactOwner: FELTRFE-75
+catalogStatus: proposed-seed
+sourceCatalog: comprehensive-rule-catalog.md
+dispositionRecord: rule-disposition.md
 note: >-
-  These definitions demonstrate the proposed FELTRFE-75 artifact shape. They
-  require design-system and product-team review before becoming policy.
+  Eight pattern families derived from the consolidated findings. Individual
+  provenance rules remain proposals until cross-product review classifies them
+  as requirements, recommendations, examples, or documented exceptions.
 
 patterns:
   - id: felt.pattern.asynchronous-content
-    version: 0.1.0
-    title: Asynchronous content
-    intent: Preserve comprehension and accessible feedback while content changes state.
-    appropriateUse:
-      - Pages, panels, tabs, lists, tables, and sections backed by asynchronous data.
+    version: 0.2.0
+    title: Asynchronous content and stable identity
+    intent: Preserve comprehension, context, and accessible feedback as data and permissions resolve.
     inputs:
-      stableIdentity:
-        type: boolean
-      supportsFiltering:
-        type: boolean
-      supportsBackgroundRefresh:
-        type: boolean
-    states:
-      - permission-loading
-      - loading
-      - refreshing
-      - error
-      - empty
-      - filtered-empty
-      - ready
-    behavioralGuidance:
-      - Distinguish loading from empty and error.
-      - Preserve stable page or section identity while its body loads when doing so remains accurate.
-      - Do not replace existing ready content with a blank loading surface during background refresh.
-      - Empty-state language should explain the actual domain condition.
-    accessibility:
-      - Announce meaningful status changes without repeatedly interrupting the user.
-      - Ensure loading indicators have an accessible name.
-      - Prevent disabled refreshing controls from becoming silently unusable.
-    rules:
-      - FELT-AS-001
-      - FELT-AS-002
-      - FELT-AS-003
-      - FELT-AS-004
+      stableIdentity: { type: boolean }
+      supportsFiltering: { type: boolean }
+      supportsBackgroundRefresh: { type: boolean }
+      permissionDependent: { type: boolean }
+    states: [permission-loading, loading, refreshing, error, empty, filtered-empty, ready]
+    ruleIds: [FELT-AS-001, FELT-AS-002, FELT-AS-003, FELT-AS-004, FELT-AS-005]
     provenance:
-      - HOF-03
-      - SYN-04
+      catalogRules: [ANS-NAV-004, ANS-DATA-002, ANS-DATA-004, ANS-DATA-005, ANS-ACT-018, HOF-011, HOF-012, HOF-013, HVS-029]
+      products: [syntara, hummingbird]
 
-  - id: felt.pattern.destructive-action
-    version: 0.1.0
+  - id: felt.pattern.consequential-action
+    version: 0.2.0
     title: Destructive and consequential actions
-    intent: Help users understand and deliberately invoke actions with material consequences.
+    intent: Match confirmation, disclosure, progress, and recovery to actual consequences.
     inputs:
-      reversibility:
-        values: [reversible, irreversible]
-      scope:
-        values: [item, resource, user, global]
-      hasDependencies:
-        type: boolean
-      executionMode:
-        values: [immediate, asynchronous]
-    behavioralGuidance:
-      - Confirmation burden should reflect reversibility, scope, and consequence.
-      - Disclose affected dependencies before confirmation when they are known.
-      - Do not add confirmation to every danger-styled action; document intentional immediate-action variants.
-      - Provide progress and completion feedback for asynchronous actions.
-    accessibility:
-      - Move focus into confirmation surfaces and restore it appropriately on close.
-      - Associate consequence text and acknowledgement controls with the confirmation surface.
-    rules:
-      - FELT-DA-001
-      - FELT-DA-002
-      - FELT-DA-003
-      - FELT-DA-004
+      reversibility: { values: [reversible, irreversible] }
+      consequence: { values: [routine, risky, destructive] }
+      scope: { values: [item, resource, user, global] }
+      dependencyEffect: { values: [none, cascade-delete, ripple-impact, unknown] }
+      executionMode: { values: [immediate, asynchronous] }
+    ruleIds: [FELT-CA-001, FELT-CA-002, FELT-CA-003, FELT-CA-004, FELT-CA-005]
     provenance:
-      - NEX-01
-      - NEX-02
-      - NEX-03
-      - NEX-04
-      - SYN-10
+      catalogRules: [ANS-ACT-001, ANS-ACT-002, ANS-ACT-003, ANS-ACT-004, ANS-ACT-005, ANS-ACT-006, ANS-ACT-010, ANS-ACT-011, ANS-ACT-012, ANS-ACT-013, ANS-ACT-014]
+      products: [syntara]
 
-  - id: felt.pattern.permission-aware-content
-    version: 0.1.0
+  - id: felt.pattern.permission-aware-experience
+    version: 0.2.0
     title: Permission-aware content and navigation
-    intent: Prevent users from seeing or following controls and destinations they cannot access.
-    behavioralGuidance:
-      - Prefer hide-until-confirmed over show-until-denied for protected controls.
-      - Do not link navigation elements to inaccessible destinations.
-      - Distinguish permission resolution from data loading and data errors.
-      - Avoid replacing a previously confirmed accessible surface merely because data is refreshing.
-    rules:
-      - FELT-PC-001
-      - FELT-PC-002
-      - FELT-PC-003
-    provenance:
-      - SYN-06
-      - SYN-07
-
-  - id: felt.pattern.composed-surface-heading
-    version: 0.1.0
-    title: Composed surface headings
-    intent: Give drawers, panels, tabs, and documents one clear visible title and accessible name.
+    intent: Make access boundaries stable and understandable across content, controls, routes, and navigation.
     inputs:
-      titleOwner:
-        values: [shell, document]
-    behavioralGuidance:
-      - Choose whether the shell or the document owns the visible title.
-      - Do not repeat the same title in both shell chrome and document content.
-      - Preserve a valid heading hierarchy when content moves between page, drawer, and tab contexts.
-    accessibility:
-      - Every composed surface needs an accessible name.
-      - Close controls need accessible labels.
-    rules:
-      - FELT-SH-001
-      - FELT-SH-002
-      - FELT-SH-003
+      accessLevel: { values: [unresolved, none, read-only, read-write] }
+      surfaceType: { values: [navigation, tab, action, form, route, breadcrumb, empty-state] }
+    ruleIds: [FELT-PA-001, FELT-PA-002, FELT-PA-003, FELT-PA-004, FELT-PA-005, FELT-PA-006]
     provenance:
-      - HVS-04
+      catalogRules: [ANS-NAV-009, ANS-PERM-001, ANS-PERM-002, ANS-PERM-003, ANS-PERM-004, ANS-PERM-005, ANS-PERM-006, ANS-PERM-007, ANS-PERM-010, ANS-PERM-013]
+      products: [syntara]
 
   - id: felt.pattern.navigable-row
-    version: 0.1.0
-    title: Navigable rows with nested actions
-    intent: Preserve expected link and keyboard behavior when an entire row represents a destination.
-    behavioralGuidance:
-      - Use link semantics when the primary row action navigates to a destination.
-      - Preserve modified-click, middle-click, focus, and open-in-new-tab behavior.
-      - Nested controls must remain independently operable without triggering row navigation.
-    rules:
-      - FELT-NR-001
-      - FELT-NR-002
-      - FELT-NR-003
+    version: 0.2.0
+    title: Navigable rows and nested controls
+    intent: Preserve native navigation and independent nested actions when a row represents a destination.
+    inputs:
+      rowDestination: { type: boolean }
+      hasNestedControls: { type: boolean }
+    ruleIds: [FELT-NR-001, FELT-NR-002, FELT-NR-003]
     provenance:
-      - SYN-08
+      catalogRules: [ANS-WF-006, ANS-WF-007]
+      products: [syntara]
 
+  - id: felt.pattern.composed-surface-title
+    version: 0.2.0
+    title: Composed-surface title ownership
+    intent: Give composed surfaces one clear visible title and accessible name.
+    inputs:
+      titleOwner: { values: [shell, document] }
+      context: { values: [page, drawer, panel, tab, dialog] }
+    ruleIds: [FELT-CT-001, FELT-CT-002, FELT-CT-003, FELT-CT-004]
+    provenance:
+      catalogRules: [ANS-NAV-008, ANS-AX-001, HVS-026, HVS-027]
+      products: [syntara, hummingbird]
+
+  - id: felt.pattern.form-actions-and-abandonment
+    version: 0.2.0
+    title: Form action placement and abandonment
+    intent: Keep completion actions persistent and predictable and protect meaningful unsaved changes.
+    inputs:
+      container: { values: [page, panel, modal, wizard, inline] }
+      complexity: { values: [simple, complex, multi-step] }
+      dirtyTracking: { type: boolean }
+    ruleIds: [FELT-FA-001, FELT-FA-002, FELT-FA-003, FELT-FA-004]
+    provenance:
+      catalogRules: [ANS-FORM-001, ANS-FORM-003, ANS-FORM-004, ANS-FORM-005, ANS-FORM-006, ANS-ACT-017]
+      products: [syntara]
+
+  - id: felt.pattern.validation-remediation
+    version: 0.2.0
+    title: Validation severity and remediation
+    intent: Give validation findings consistent consequences, visibility, and correction paths.
+    inputs:
+      severity: { values: [error, warning, information] }
+      operation: { values: [save, publish, run, submit, verify] }
+      targetSpecific: { type: boolean }
+    ruleIds: [FELT-VR-001, FELT-VR-002, FELT-VR-003, FELT-VR-004]
+    provenance:
+      catalogRules: [ANS-FORM-008, ANS-WF-012, ANS-WF-013, ANS-WF-014]
+      products: [syntara]
+
+  - id: felt.pattern.post-action-feedback
+    version: 0.2.0
+    title: Post-action feedback and context preservation
+    intent: Confirm outcomes without redundant noise and leave the interface trustworthy.
+    inputs:
+      outcome: { values: [success, failure, pending, partial] }
+      originatingSurface: { values: [list, detail, form, dialog, canvas] }
+      visibleStateChange: { type: boolean }
+    ruleIds: [FELT-PF-001, FELT-PF-002, FELT-PF-003, FELT-PF-004]
+    provenance:
+      catalogRules: [ANS-ACT-009, ANS-ACT-018, ANS-ACT-019, ANS-WF-004]
+      products: [syntara]
+
+workflowFamilies:
+  - id: felt.workflow.retrieve-before-create
+    owner: UXD-AI-Helpers
+    provenance: [ANS-DS-002, ANS-DS-003, ANS-DS-004, ANS-DS-007, HOF-014, HOF-015, HOF-016, HOF-017, HVS-014, HVS-015, HVS-018]
+  - id: felt.workflow.outline-first-implementation
+    owner: UXD-AI-Helpers-with-Hummingbird-overlay
+    provenance: [HOF-001, HOF-002, HOF-003, HVS-013, HVS-023, HVS-024, HVS-025]
+  - id: felt.workflow.architectural-relevance
+    owner: product-overlays
+    provenance: [HOF-004, HOF-005, HOF-006, HOF-007, HOF-008, HVS-001, HVS-004, HVS-005, HVS-021, HVS-022]
+  - id: felt.workflow.render-and-validate
+    owner: UXD-AI-Helpers
+    provenance: [ANS-VERIFY-001, ANS-VERIFY-002, ANS-VERIFY-003, ANS-VERIFY-004, HOF-020, HOF-021, HVS-030]
+  - id: felt.workflow.accessibility-validation
+    owner: UXD-AI-Helpers
+    provenance: [ANS-AX-010]

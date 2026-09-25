@@ -1,56 +1,130 @@
-schemaVersion: "0.1"
+schemaVersion: "0.2"
 artifactOwner: FELTRFE-43
-status: illustrative
+status: proposed-seed
+sourceCatalog: comprehensive-rule-catalog.md
 
-guidanceExamples:
-  - request:
-      intent: Build a filterable resource list that loads from an API.
-      product: hummingbird
-    selection:
-      patternId: felt.pattern.asynchronous-content
-      variantInputs:
-        stableIdentity: true
-        supportsFiltering: true
-        supportsBackgroundRefresh: true
-    conciseGuidance:
-      - Keep the section title and stable shell visible while its data loads.
-      - Represent loading, error, empty, filtered-empty, and ready distinctly.
-      - During background refresh, preserve current content and communicate that controls are temporarily unavailable if necessary.
-      - Use the Hummingbird overlay for its approved status components and content root.
-    applicableRules: [FELT-AS-001, FELT-AS-002, FELT-AS-003, FELT-AS-004]
-    workflow:
-      - Retrieve current PatternFly component references.
-      - Read the Hummingbird product overlay.
-      - Inspect existing repository primitives before creating another status component.
-      - Implement and render all applicable states.
-      - Run Felt semantic validation and Hummingbird tests.
+retrievalContract:
+  inputs: [user-intent, surface, product, repository-context, action-consequences, permission-context]
+  retrieveInOrder:
+    - Current PatternFly APIs, tokens, examples, and accessibility guidance from PatternFly MCP.
+    - Applicable Felt pattern records and semantic rule IDs.
+    - Product overlay component mappings, architecture, terminology, and exceptions.
+    - Existing repository primitives and compositions.
+  output:
+    - concise task-specific guidance
+    - selected pattern and rule IDs
+    - product mappings and exceptions
+    - required implementation and validation workflow
+  guardrails:
+    - Do not copy volatile PatternFly APIs into Felt guidance.
+    - Do not promote product wrappers or exceptions into central policy.
+    - Do not create a new abstraction before repository and PatternFly retrieval.
+    - Return only guidance applicable to the current task.
 
-  - request:
-      intent: Add a control that cancels a currently running execution.
-      product: syntara
-    selection:
-      patternId: felt.pattern.destructive-action
-      variantInputs:
-        reversibility: reversible
-        scope: resource
-        hasDependencies: false
-        executionMode: asynchronous
-    conciseGuidance:
-      - Confirmation is not automatically required for a reversible, time-sensitive cancellation.
-      - Prevent duplicate submission while cancellation is pending.
-      - Communicate progress, success, and failure.
-      - Apply the documented Syntara immediate-cancel exception rather than the irreversible-delete variant.
-    applicableRules: [FELT-DA-004]
-    productException: syntara.destructive-action.cancel-running-execution
+workflowFamilies:
+  - id: felt.workflow.retrieve-before-create
+    existingAiHelpers: [pf-component-reuse-check, pf-component-check, pf-screenshot-mapping]
+    steps:
+      - Identify the intended role and interaction rather than guessing a component name.
+      - Retrieve current PatternFly candidates and inspect product-overlay mappings.
+      - Search repository primitives, sections, shells, and approved wrappers.
+      - Extend or compose existing capability before proposing a new abstraction.
+      - If a gap remains, record evidence, ownership, temporary treatment, and upstream path.
 
-  - request:
-      intent: Add a tab visible only to users with workflow-read permission.
-      product: syntara
-    selection:
-      patternId: felt.pattern.permission-aware-content
-    conciseGuidance:
-      - Keep the protected tab absent until the permission check confirms access.
-      - Do not briefly show and then remove it.
-      - Ensure breadcrumbs and related navigation do not expose inaccessible destinations.
-    applicableRules: [FELT-PC-001, FELT-PC-002]
+  - id: felt.workflow.outline-first-implementation
+    existingAiHelpers: []
+    initialDelivery: hummingbird-product-overlay
+    steps:
+      - Make the rendered document structure and applicable state branches visible in the component return.
+      - Keep hydration data separate from structural markup.
+      - Preserve concern ownership and avoid one-call-site structural abstractions.
+      - Apply the product architecture overlay before moving or naming files.
 
+  - id: felt.workflow.render-and-validate
+    existingAiHelpers: [pf-review, pf-test-gen, pf-a11y-audit, pf-a11y-test-gen, pf-a11y-keyboard, uxd-prototype-evaluate]
+    steps:
+      - Render every applicable state and permission tier.
+      - Run semantic rule validators and product adapters.
+      - Inspect DOM, headings, landmarks, focus, interaction semantics, tokens, console, and responsive behavior.
+      - Return rule IDs, evidence, severity, and remediation for every finding.
+
+guidanceTemplates:
+  - intent: build-or-review-asynchronous-content
+    patternId: felt.pattern.asynchronous-content
+    askFor: [stableIdentity, filtering, backgroundRefresh, permissionDependency]
+    guidance:
+      - Keep accurate stable identity visible while unresolved body content changes state.
+      - Represent every applicable state distinctly and preserve valid content during refresh.
+      - Use domain-specific empty meaning and recovery rather than a generic no-data message.
+    applicableRules: [FELT-AS-001, FELT-AS-002, FELT-AS-003, FELT-AS-004, FELT-AS-005]
+    aiHelpers: [pf-state-audit, pf-test-gen, uxd-design-handoff, uxd-prototype-evaluate]
+
+  - intent: add-consequential-action
+    patternId: felt.pattern.consequential-action
+    askFor: [reversibility, consequence, scope, dependencyEffect, executionMode]
+    guidance:
+      - Select confirmation burden from actual consequences rather than button styling.
+      - Disclose known cascade or ripple effects and require acknowledgement only when justified.
+      - Prevent duplicate async requests and communicate pending and final outcomes.
+    applicableRules: [FELT-CA-001, FELT-CA-002, FELT-CA-003, FELT-CA-004, FELT-CA-005]
+    aiHelpers: [uxd-design-handoff, pf-test-gen, uxd-prototype-evaluate]
+
+  - intent: gate-content-or-navigation
+    patternId: felt.pattern.permission-aware-experience
+    askFor: [accessLevel, surfaceType, directRoute, explanationNeeded]
+    guidance:
+      - Hide protected UI until access is confirmed and model permission loading separately.
+      - Preserve readable content in read-only mode and gate every mutation consistently.
+      - Do not expose actions or links the user cannot complete.
+    applicableRules: [FELT-PA-001, FELT-PA-002, FELT-PA-003, FELT-PA-004, FELT-PA-005, FELT-PA-006]
+    aiHelpers: [pf-state-audit, pf-a11y-audit, pf-a11y-test-gen, uxd-prototype-evaluate]
+
+  - intent: make-row-navigable
+    patternId: felt.pattern.navigable-row
+    askFor: [rowDestination, nestedControls]
+    guidance:
+      - Use native link semantics for the destination.
+      - Preserve keyboard, modified-click, middle-click, and new-tab behavior.
+      - Keep nested actions independent from row activation.
+    applicableRules: [FELT-NR-001, FELT-NR-002, FELT-NR-003]
+    aiHelpers: [pf-a11y-audit, pf-a11y-test-gen, pf-a11y-keyboard]
+
+  - intent: compose-surface-with-title
+    patternId: felt.pattern.composed-surface-title
+    askFor: [context, titleOwner, routedPage]
+    guidance:
+      - Choose one visible title owner and one accessible naming relationship.
+      - Do not duplicate the title in shell chrome and document content.
+      - Re-evaluate heading levels, landmarks, and browser title in the composed context.
+    applicableRules: [FELT-CT-001, FELT-CT-002, FELT-CT-003, FELT-CT-004]
+    aiHelpers: [pf-a11y-audit, pf-a11y-test-gen, uxd-prototype-evaluate]
+
+  - intent: build-form-actions
+    patternId: felt.pattern.form-actions-and-abandonment
+    askFor: [container, complexity, dirtyTracking, dependentSteps]
+    guidance:
+      - Keep completion actions predictably placed relative to scrolling form content.
+      - Make Cancel secondary and verify it does not mutate state.
+      - Guard meaningful unsaved changes and reset invalid dependent selections.
+    applicableRules: [FELT-FA-001, FELT-FA-002, FELT-FA-003, FELT-FA-004]
+    aiHelpers: [pf-form-gen, pf-test-gen, uxd-design-handoff, uxd-prototype-evaluate]
+
+  - intent: present-validation-findings
+    patternId: felt.pattern.validation-remediation
+    askFor: [severity, operation, targetSpecific]
+    guidance:
+      - Apply consistent blocking consequences for each severity.
+      - Preserve visible warnings and link targeted findings to correction locations.
+      - Explain why a validation-dependent action remains disabled.
+    applicableRules: [FELT-VR-001, FELT-VR-002, FELT-VR-003, FELT-VR-004]
+    aiHelpers: [pf-form-gen, pf-test-gen, pf-a11y-audit, uxd-prototype-evaluate]
+
+  - intent: handle-action-outcome
+    patternId: felt.pattern.post-action-feedback
+    askFor: [outcome, originatingSurface, visibleStateChange]
+    guidance:
+      - Update stale information immediately and preserve context when it still exists.
+      - Use the smallest feedback channel that makes pending, success, or failure clear.
+      - Preserve recovery context and actionable error information on failure.
+    applicableRules: [FELT-PF-001, FELT-PF-002, FELT-PF-003, FELT-PF-004]
+    aiHelpers: [pf-test-gen, pf-adversarial-review, uxd-prototype-evaluate]

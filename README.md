@@ -1,17 +1,18 @@
 # Felt layered design intelligence starter artifacts
 
-This bundle is a first-pass decomposition of representative guidance from the Hummingbird and Automation Nexus or Syntara UI skills. It demonstrates the proposed outputs of FELTRFE-75, FELTRFE-43, and FELTRFE-19.
+This repository is a working starter architecture for converting product UI skills into shared Felt design intelligence, task-specific agent guidance, product overlays, and executable semantic validation. It demonstrates the proposed outputs of FELTRFE-75, FELTRFE-43, and FELTRFE-19.
 
 > **Status:** Discussion starter. The classifications, patterns, and rules require review with Felt and the contributing product teams before they become design-system policy.
 
 ## Contents
 
-- `instruction-inventory.md` classifies 25 representative instructions by source, ownership, portability, enforcement approach, and candidate Felt pattern.
-- `comprehensive-rule-catalog.md` normalizes the complete Ansible/Syntara and Hummingbird skill review into traceable rules and recommended layers.
-- `pattern-definitions.yaml` shows the FELTRFE-75 source-of-truth format for five candidate patterns.
-- `agent-guidance.yaml` shows the concise, task-relevant guidance FELTRFE-43 could deliver through MCP or a thin skill.
-- `semantic-rules.yaml` shows the FELTRFE-19 rule and diagnostic model.
-- `product-overlays.yaml` shows how Syntara and Hummingbird can map shared Felt patterns to different implementations.
+- `comprehensive-rule-catalog.md` preserves 161 normalized Ansible/Syntara and Hummingbird rules, provenance, proposed layers, and AI Helpers coverage.
+- `rule-disposition.md` assigns every catalog rule to canonical seed, cross-product review, AI-helper workflow, PatternFly reference, product overlay, or split treatment.
+- `pattern-definitions.yaml` defines eight proposed FELTRFE-75 canonical pattern families and five workflow families.
+- `agent-guidance.yaml` defines the FELTRFE-43 retrieval contract, workflow guidance, and task-specific templates.
+- `semantic-rules.yaml` defines 35 proposed FELTRFE-19 validation contracts with validators and remediation.
+- `product-overlays.yaml` maps shared patterns and workflows to Syntara and Hummingbird implementations and exceptions.
+- `evaluations/representative-rule-set.md` preserves the original 25-rule pilot as a stable, non-authoritative evaluation fixture.
 
 ## Source material
 
@@ -36,12 +37,12 @@ The source skills are evidence, not automatically authoritative cross-product po
 
 ## Recommended review sequence
 
-1. Review the classifications in `instruction-inventory.md` with the source-product teams.
-2. Approve, revise, or reject the five candidate patterns.
-3. Confirm which rules are requirements, recommendations, or examples.
-4. Test the product overlays against real Syntara and Hummingbird code.
-5. Select a small set of deterministic FELTRFE-19 validators.
-6. Run paired agent tasks before and after FELTRFE-43 guidance is available.
+1. Review proposed decisions in `rule-disposition.md` with Felt, Ansible/Syntara, Hummingbird, PatternFly, and AI Helpers owners.
+2. Mark each canonical candidate as a requirement, recommendation, example, exception, deferred rule, or rejected rule.
+3. Approve or revise the eight initial pattern families and their applicability inputs.
+4. Test the product overlays against real Syntara and Hummingbird code without moving wrapper names into Felt.
+5. Implement a small deterministic subset of the 35 semantic contracts and measure false positives.
+6. Run the representative evaluation set before and after FELTRFE-43 retrieval is available.
 
 ## Contributing
 
