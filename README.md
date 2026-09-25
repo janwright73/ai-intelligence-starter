@@ -7,6 +7,7 @@ This bundle is a first-pass decomposition of representative guidance from the Hu
 ## Contents
 
 - `instruction-inventory.md` classifies 25 representative instructions by source, ownership, portability, enforcement approach, and candidate Felt pattern.
+- `comprehensive-rule-catalog.md` normalizes the complete Ansible/Syntara and Hummingbird skill review into traceable rules and recommended layers.
 - `pattern-definitions.yaml` shows the FELTRFE-75 source-of-truth format for five candidate patterns.
 - `agent-guidance.yaml` shows the concise, task-relevant guidance FELTRFE-43 could deliver through MCP or a thin skill.
 - `semantic-rules.yaml` shows the FELTRFE-19 rule and diagnostic model.
